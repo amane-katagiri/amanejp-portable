@@ -1,0 +1,3 @@
+[あまねけ！](https://ama.ne.jp/)のリソースが全て埋め込まれたWebサーバーをダウンロードできます。
+
+You can download a web server with all the resources embedded in [Amaneke!](https://ama.ne.jp/).

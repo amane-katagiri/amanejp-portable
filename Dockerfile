@@ -1,8 +1,8 @@
 FROM golang:1.18 as builder
 COPY ./output /go/output
-COPY ./sugoi.go /go/sugoi.go
+COPY ./main.go /go/main.go
 ENV CGO_ENABLED=0
-RUN go build -o sugoi sugoi.go
+RUN go build -o sugoi main.go
 
 FROM scratch as prod
 MAINTAINER Amane Katagiri

@@ -1,4 +1,4 @@
-name: 'publish docker image'
+name: 'build'
 
 on:
   repository_dispatch:
@@ -11,19 +11,51 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - name: download ama.ne.jp archive
+      run: |
+        curl -so ./amanejp.zip https://amanejp.netlify.app/appendices/archive/amanejp.zip || while ! curl --continue-at - -so ./amanejp.zip https://amanejp.netlify.app/appendices/archive/amanejp.zip; do :; done
+        unzip -q ./amanejp.zip
+        rm ./amanejp.zip
+    # docker
     - name: login to dockerhub
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: download ama.ne.jp archive
-      run: |
-        curl -so ./amanejp.zip https://amanejp.netlify.app/appendices/archive/amanejp.zip || while ! curl --continue-at - -so ./amanejp.zip https://amanejp.netlify.app/appendices/archive/amanejp.zip; do :; done
-        unzip -q ./amanejp.zip
     - name: build and push docker image
       uses: docker/build-push-action@v2
       with:
         context: .
         push: true
         tags: amane/amanejp:latest
+    # binary
+    - uses: actions/setup-go@v3
+    - uses: crazy-max/ghaction-import-gpg@34ea557550c84ea665cae5c61c3b084feac7e042
+      id: import_gpg
+      with:
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+        passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+    - name: delete previous releases
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { owner, repo } = context.repo
+          try {
+            const { data: { id } } = await github.rest.repos.getLatestRelease({ owner, repo })
+            await github.rest.repos.deleteRelease({ owner, repo, release_id: id })
+          } catch (e) {
+            console.error(e)
+          }
+    - name: set release version tag
+      run: |
+        git tag v1.$(date -Id | sed -e 's/-//' | sed -e 's/-/./')$(date '+%H%M')
+    - uses: goreleaser/goreleaser-action@68acf3b1adf004ac9c2f0a4259e85c5f66e99bef
+      with:
+        distribution: goreleaser
+        version: latest
+        args: release --rm-dist --release-notes=releases.txt
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
