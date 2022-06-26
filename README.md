@@ -1,6 +1,6 @@
 # amanejp-portable
 
-A portable HTTP server (cross-platform or Docker image) embedded with all resources of ama.ne.jp.
+A portable HTTP server (cross-platform or Docker image) embedded with all the resources of ama.ne.jp.
 
 ## Cross-platform Binary
 
