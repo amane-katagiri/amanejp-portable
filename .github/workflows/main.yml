@@ -50,7 +50,7 @@ jobs:
           }
     - name: set release version tag
       run: |
-        git tag v1.$(date -Id | sed -e 's/-//' | sed -e 's/-/./')$(date '+%H%M')
+        git tag v1.$(date -Id | sed -e 's/-//' | sed -e 's/-0\?/./')$(date '+%H%M')
     - uses: goreleaser/goreleaser-action@336e29918d653399e599bfca99fadc1d7ffbc9f7
       with:
         distribution: goreleaser
