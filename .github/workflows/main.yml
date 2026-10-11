@@ -35,7 +35,7 @@ jobs:
         tags: amane/amanejp:latest
     # binary
     - uses: actions/setup-go@v4
-    - uses: crazy-max/ghaction-import-gpg@72b6676b71ab476b77e676928516f6982eef7a41
+    - uses: crazy-max/ghaction-import-gpg@2dc316deee8e90f13e1a351ab510b4d5bc0c82cd
       id: import_gpg
       with:
         gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -55,7 +55,7 @@ jobs:
     - name: set release version tag
       run: |
         git tag v1.$(date -Id | sed -e 's/-//' | sed -e 's/-0\?/./')$(date '+%H%M')
-    - uses: goreleaser/goreleaser-action@336e29918d653399e599bfca99fadc1d7ffbc9f7
+    - uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94
       with:
         distribution: goreleaser
         version: latest
