@@ -13,10 +13,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: download ama.ne.jp archive
+      env:
+        GH_TOKEN: ${{ secrets.GH_ARCHIVE_PAT }}
       run: |
-        curl -so ./amanejp.zip https://amanejp.netlify.app/appendices/archive/amanejp.zip || while ! curl --continue-at - -so ./amanejp.zip https://amanejp.netlify.app/appendices/archive/amanejp.zip; do :; done
-        unzip -q ./amanejp.zip
-        rm ./amanejp.zip
+        gh api repos/amane-katagiri/amane-katagiri.github.io/zipball/gh-pages > amanejp.zip
+        unzip -q ./amanejp.zip -d ./tmp
+        mkdir -p output
+        cp -a ./tmp/*/. output/
+        rm -rf ./tmp ./amanejp.zip
     # docker
     - name: login to dockerhub
       uses: docker/login-action@v2
