@@ -16,5 +16,5 @@ Go to [Releases](https://github.com/amane-katagiri/amanejp-portable/releases) an
 
 ```
 docker pull amane/amanejp
-docker run --rm -p 8080:8080 amanejp
+docker run --rm -p 8080:8080 amane/amanejp
 ```
